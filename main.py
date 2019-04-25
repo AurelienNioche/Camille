@@ -34,8 +34,8 @@ def csv_import(file_name):
 
 
 def main():
-    labels, data_hp = csv_import(file_name='hp.csv')
-    labels, data_no_hp = csv_import(file_name='no_hp.csv')
+    labels, data_hp = csv_import(file_name='data/hp.csv')
+    labels, data_no_hp = csv_import(file_name='data/no_hp.csv')
 
     n_measure = data_hp.shape[1]
 
@@ -61,7 +61,8 @@ def main():
         ax_i += 1
 
         ax = axes[ax_i]
-        ax.bar(np.arange(2), (np.mean(hp), np.mean(no_hp)), color=("orange", "blue"), yerr=(np.std(hp), np.std(no_hp)), tick_label=("HP", "No-HP"))
+        ax.bar(np.arange(2), (np.mean(hp), np.mean(no_hp)), color=("orange", "blue"),
+               yerr=(np.std(hp), np.std(no_hp)), tick_label=("HP", "No-HP"))
         ax.set_ylim((0, 1))
         ax_i += 1
 
@@ -71,7 +72,7 @@ def main():
         ax.set_xticklabels(('HP', 'No-HP'))
         ax_i += 1
 
-        plt.savefig(f"fig_{title}.pdf")
+        plt.savefig(f"fig/fig_{title}.pdf")
         u, p = mannwhitneyu(hp, no_hp)
         print(title, f'u={u}', f'p={p:.3f}')
 
