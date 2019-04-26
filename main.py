@@ -4,33 +4,43 @@ import numpy as np
 import csv
 
 from scipy.stats import mannwhitneyu
+from statsmodels.sandbox.stats.multicomp import multipletests
 
 
 def csv_import(file_name):
 
     data = []
     labels = None
+    labels_that_matter = []
     with open(file_name) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         i = 0
         for row in csv_reader:
 
-            if i != 0:
+            if i == 0:
+                labels = row
+            else:
                 f_row = []
-                for r in row:
+                for j, r in enumerate(row):
+                    label = labels[j]
+                    if "AV" not in label and "AUJ" not in label:
+                        continue
+                    labels_that_matter.append(label)
                     if r:
                         r = r.replace(",", ".")
-
                         r = float(r)
-                        r /= 4
+
+                        if "RESSENTI" in labels[j]:
+                            r /= 6
+                        else:
+                            r /= 5
                         f_row.append(r)
                 if f_row:
                     data.append(f_row)
-            else:
-                labels = row
+
             i += 1
 
-    return labels, np.asarray(data)
+    return labels_that_matter, np.asarray(data)
 
 
 def main():
@@ -38,6 +48,9 @@ def main():
     labels, data_no_hp = csv_import(file_name='data/no_hp.csv')
 
     n_measure = data_hp.shape[1]
+
+    p_values = []
+    u_values = []
 
     for i in range(n_measure):
 
@@ -74,7 +87,20 @@ def main():
 
         plt.savefig(f"fig/fig_{title}.pdf")
         u, p = mannwhitneyu(hp, no_hp)
-        print(title, f'u={u}', f'p={p:.3f}')
+
+        u_values.append(u)
+        p_values.append(p)
+
+    sign, p_adjusted, alphacSidak, alphacBonf = multipletests(p_values, method='bonferroni')
+    # print(p_adjusted)
+
+    for i in range(n_measure):
+        s = sign[i]
+        title = labels[i]
+        u = u_values[i]
+        p_raw = p_values[i]
+        p = p_adjusted[i]
+        print(title, f'u={u}', f'p_raw={p_raw:.3f}', f'p_corr={p:.3f}', s)
 
 
 if __name__ == "__main__":
