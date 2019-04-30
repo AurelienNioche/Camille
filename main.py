@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 import csv
+import os
 
 from scipy.stats import mannwhitneyu
 from statsmodels.sandbox.stats.multicomp import multipletests
@@ -44,6 +45,9 @@ def csv_import(file_name):
 
 
 def main():
+
+    os.makedirs("fig", exist_ok=True)
+
     labels, data_hp = csv_import(file_name='data/hp.csv')
     labels, data_no_hp = csv_import(file_name='data/no_hp.csv')
 
@@ -54,7 +58,7 @@ def main():
 
     for i in range(n_measure):
 
-        title=labels[i]
+        title = labels[i]
 
         figure, axes = plt.subplots(nrows=3)
 
