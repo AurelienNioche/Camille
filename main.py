@@ -86,7 +86,7 @@ def main():
         ax_i += 1
 
         plt.savefig(f"fig/fig_{title}.pdf")
-        u, p = mannwhitneyu(hp, no_hp)
+        u, p = mannwhitneyu(hp, no_hp, alternative='two-sided')
 
         u_values.append(u)
         p_values.append(p)
